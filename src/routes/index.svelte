@@ -1,62 +1,36 @@
-<script>
-  import { onMount } from 'svelte';
-
-  onMount(() => {
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => {
-            document.location.href = "/admin/";
-          });
-        }
-      });
-    }
-  });
+<script context="module">
+	export function preload({ params, query }) {
+		return this.fetch(`blog.json`).then(r => r.json()).then(posts => {
+			return { posts };
+		});
+	}
 </script>
+
+<script>
+	export let posts;
+</script>
+
 <style>
-	h1, figure, p {
-		text-align: center;
-		margin: 0 auto;
-	}
-
-	h1 {
-		font-size: 2.8em;
-		text-transform: uppercase;
-		font-weight: 700;
-		margin: 0 0 0.5em 0;
-	}
-
-	figure {
-		margin: 0 0 1em 0;
-	}
-
-	img {
-		width: 100%;
-		max-width: 400px;
-		margin: 0 0 1em 0;
-	}
-
-	p {
-		margin: 1em auto;
-	}
-
-	@media (min-width: 480px) {
-		h1 {
-			font-size: 4em;
-		}
-	}
+    .article{
+        margin-bottom: 1.75rem
+    }
+	.post-date{
+        margin-bottom: 0.2rem
+    }
 </style>
 
 <svelte:head>
-	<title>Sapper project template</title>
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+	<title>Blog</title>
 </svelte:head>
 
-<h1>Great success!</h1>
-
-<figure>
-	<img alt='Borat' src='great-success.png'>
-	<figcaption>HIGH FIVE!</figcaption>
-</figure>
-
-<p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>
+<h1>Blog</h1>
+<hr />
+<div class="article-list">
+    {#each posts as post}
+        <div class="article">
+            <a href="/{post.slug}"><h3 class="post-title">{post.title}</h3></a>
+            <span class="post-date">{ new Date(post.date).toDateString() }</span>
+            <p>{ post.description }</p>
+        </div>
+    {/each}
+</div>
